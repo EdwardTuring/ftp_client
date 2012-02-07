@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/images/file_browse.png</file>
+        <file>res/images/settings.png</file>
+        <file>res/images/download.png</file>
+        <file>res/images/upload.png</file>
+        <file>res/images/parent_dir.png</file>
+        <file>res/images/background.jpg</file>
+        <file>res/qt_zh_CN.qm</file>
+        <file>res/images/cdtoparent.png</file>
+        <file>res/images/enter.png</file>
+        <file>res/images/exit.png</file>
+        <file>res/images/ftp.png</file>
+        <file>res/images/icon.png</file>
+        <file>res/images/open.png</file>
+        <file>res/images/save.png</file>
+        <file>res/images/server.png</file>
+        <file>res/images/file.png</file>
+        <file>res/images/filefolder.png</file>
+    </qresource>
+</RCC>

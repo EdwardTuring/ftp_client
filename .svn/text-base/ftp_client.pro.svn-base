@@ -1,0 +1,27 @@
+#-------------------------------------------------
+#
+# Project created by QtCreator 2011-10-31T19:43:16
+#
+#-------------------------------------------------
+
+QT       += core gui network
+
+TARGET = ftp_client
+TEMPLATE = app
+
+
+SOURCES += main.cpp\
+        mainwindow.cpp
+
+HEADERS  += mainwindow.h \
+    qt4.h
+
+FORMS    += \
+    mainwindow.ui
+
+RESOURCES += \
+    res.qrc
+
+
+
+
