@@ -31,6 +31,9 @@ protected slots:
 	void 	itemChoosed ( QTreeWidgetItem * item, int column );
 	void downloadFile();
 	void updateDataTransferProgress(qint64 readBytes,qint64 totalBytes);
+    void chooseFile();
+    void uploadFile();
+
 
 
 	//œ‘ æ∂‘ª∞øÚ£∫
@@ -56,6 +59,9 @@ private:
     QString pwd_;
     uint port_;
 	QFile *file_;
+
+    QString choosed_files_dir_;
+    QFile *upload_file_;
 
 };
 

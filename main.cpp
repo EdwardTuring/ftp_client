@@ -13,10 +13,11 @@ int main(int argc, char * argv[])
 {
     QApplication app(argc, argv);
     setCodec();
-    QTranslator translator;
-    translator.load(":res/qt_zh_CN.qm");
-     app.installTranslator(&translator);
 
+    QTranslator translator;
+
+     translator.load("ftpclient_zh",".");
+     app.installTranslator(&translator);
     MainWindow w;
     w.show();
 

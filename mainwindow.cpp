@@ -2,6 +2,8 @@
 #include "ui_connectDialog.h"
 #include "ui_SettingsDialog.h"
 #include "qt4.h"
+#include <QtGui>
+#include <QMessageBox>
 //244 244 244
 
 
@@ -28,8 +30,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	CONNECT(ui->btn_download_,clicked(),this,downloadFile());
 	CONNECT(ui->btn_settings_,clicked(),this,showConnectDialog());
 	CONNECT(ui->act_connect_to_,triggered(),this,showSettingDialog());
+    CONNECT(ui->btn_choosefile_,clicked(),this,chooseFile());
+    CONNECT(ui->btn_upfile_,clicked(),this,uploadFile());
 	this->setWindowTitle("北京城乡新媒体视频内容管理平台");   
-	connectToFtpServer();
+
+
+
+
+    connectToFtpServer();
 
 
 }
@@ -67,6 +75,10 @@ void MainWindow::connectToFtpServer()
               this, SLOT(ftpCommandFinished(int,bool)));
   connect(ftp_, SIGNAL(dataTransferProgress(qint64,qint64)),
 	  this, SLOT(updateDataTransferProgress(qint64,qint64)));
+
+
+ // CONNECT(ftp_,done(bool),this,downloadFinished(int,bool));
+
 
   ftp_->connectToHost(this->hostname_);
   ftp_->login();
@@ -107,12 +119,14 @@ void MainWindow::ftpCommandFinished(int, bool error)
 			file_->close();
 			file_->remove();
 		} else {
-			ui->status_->setText("正在下载 "+(file_->fileName())+" 到当前目录...");
+
 			file_->close();
 		}
+        ui->progress_bar_->hide();
+        ui->btn_download_->setEnabled(true);
+       ui->status_->setText(file_->fileName()+" 下载已完成");
 		delete file_;
-		ui->btn_download_->setEnabled(false);
-		ui->progress_bar_->hide();
+
 
     }
     else if (ftp_->currentCommand() == QFtp::List)
@@ -122,6 +136,16 @@ void MainWindow::ftpCommandFinished(int, bool error)
             ui->file_tree_->addTopLevelItem(new QTreeWidgetItem(QStringList() << "(空)"));
            ui->file_tree_->setEnabled(false);
         }
+    }
+    else if(ftp_->currentCommand()==QFtp::Put)
+    {
+        ui->progress_bar_->hide();
+        ui->btn_upfile_->setEnabled(true);
+       ui->status_->setText(QFileInfo(choosed_files_dir_).fileName()+" 上传已完成");
+    }
+    else if(ftp_->currentCommand()==QFtp::None)
+    {
+         ui->status_->setText("已连接到 "+this->hostname_);
     }
 }
 void MainWindow::handleConfig()
@@ -265,6 +289,9 @@ void MainWindow::downloadFile()
 
 
 		ui->progress_bar_->show();
+        ui->btn_download_->setEnabled(false);
+        ui->status_->setText("正在下载 "+(file_->fileName())+" 到当前目录...");
+
 	
 	
 }
@@ -274,3 +301,41 @@ void MainWindow::updateDataTransferProgress(qint64 readBytes,
 	ui->progress_bar_->setMaximum(totalBytes);
 	ui->progress_bar_->setValue(readBytes);
 }
+void MainWindow::chooseFile()
+{
+    QString path=QFileDialog::getOpenFileName(NULL,tr("打开需要上传的媒体文件"),
+                                              QDir::homePath(),
+                                              tr("Multimedia files(*)"));
+        QString temp("");
+        int a=QString::compare(path,temp);
+        if(a>0){
+            this->choosed_files_dir_=path;
+            this->ui->ledt_filedir_->setText(choosed_files_dir_);
+
+        }
+
+}
+void MainWindow::uploadFile()
+{
+    if(QString::compare(choosed_files_dir_,"")!=0)
+    {
+
+
+        QFile *remoteFileName=new QFile(choosed_files_dir_);
+        qDebug()<<remoteFileName->fileName();
+          qDebug()<< remoteFileName->open(QIODevice::ReadOnly);
+        QString fileName = QFileInfo(choosed_files_dir_).fileName();
+          qDebug()<<ftp_->put(remoteFileName,fileName);
+          ui->progress_bar_->show();
+
+          ui->btn_upfile_->setEnabled(false);
+          ui->status_->setText("正在上传 "+fileName+" 到服务器...");
+       remoteFileName->close();
+
+    }
+    else
+    {
+        QMessageBox::information(this,"提示","您还没有选择需要上传的文件");
+    }
+}
+

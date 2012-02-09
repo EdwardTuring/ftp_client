@@ -8,7 +8,7 @@ QT       += core gui network
 
 TARGET = ftp_client
 TEMPLATE = app
-
+TRANSLATIONS += ftpclient_zh.ts
 
 SOURCES += main.cpp\
         mainwindow.cpp \
