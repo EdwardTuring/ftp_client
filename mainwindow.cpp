@@ -81,7 +81,7 @@ void MainWindow::connectToFtpServer()
 
 
   ftp_->connectToHost(this->hostname_);
-  ftp_->login();
+  loginToFtpServer();
     ui->file_tree_->setEnabled(true);
 
 }
@@ -141,6 +141,8 @@ void MainWindow::ftpCommandFinished(int, bool error)
     {
         ui->progress_bar_->hide();
         ui->btn_upfile_->setEnabled(true);
+        ui->file_tree_->clear();
+        ftp_->list();
        ui->status_->setText(QFileInfo(choosed_files_dir_).fileName()+" 上传已完成");
     }
     else if(ftp_->currentCommand()==QFtp::None)
@@ -241,7 +243,7 @@ void MainWindow::addList(const QUrlInfo &urlInfo)
 }
 void MainWindow::processItem(QTreeWidgetItem *item, int /*column*/)
 {
-    QString name = item->text(0);
+    QString name = QString::fromLatin1((item->text(0)).toUtf8());
     if (isDirectory.value(name)) {
         ui->file_tree_->clear();
         isDirectory.clear();
@@ -276,7 +278,7 @@ void MainWindow::itemChoosed( QTreeWidgetItem * item, int column )
 }
 void MainWindow::downloadFile()
 {
-	QString fileName = ui->file_tree_->currentItem()->text(0);
+    QString fileName = ui->file_tree_->currentItem()->text(0);
 	
 		file_ = new QFile(fileName);
 	if (!file_->open(QIODevice::WriteOnly)) {
@@ -285,7 +287,7 @@ void MainWindow::downloadFile()
 		return;
 	}
 
-	ftp_->get(ui->file_tree_->currentItem()->text(0), file_);
+    ftp_->get(QString::fromLatin1((ui->file_tree_->currentItem()->text(0)).toUtf8()), file_);
 
 
 		ui->progress_bar_->show();
@@ -325,12 +327,13 @@ void MainWindow::uploadFile()
         qDebug()<<remoteFileName->fileName();
           qDebug()<< remoteFileName->open(QIODevice::ReadOnly);
         QString fileName = QFileInfo(choosed_files_dir_).fileName();
-          qDebug()<<ftp_->put(remoteFileName,fileName);
+          qDebug()<<ftp_->put(remoteFileName,QString::fromLatin1(fileName.toUtf8()));
           ui->progress_bar_->show();
 
           ui->btn_upfile_->setEnabled(false);
           ui->status_->setText("正在上传 "+fileName+" 到服务器...");
        remoteFileName->close();
+
 
     }
     else
